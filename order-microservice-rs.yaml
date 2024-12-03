@@ -31,4 +31,12 @@ spec:
             configMapKeyRef:
               name: db-credentials
               key: password
+        volumeMounts:
+        - name: app-config
+          mountPath: /app/config
+      volumes:
+        - name: app-config
+          configMap:
+            name: order-microservice-cm
+
 
