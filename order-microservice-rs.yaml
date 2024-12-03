@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: "order-microservice-rs"
+spec:
+  # modify replicas according to your case
+  replicas: 2
+  selector:
+    matchLabels:
+      app: "order-microservice"
+  template:
+    metadata:
+      labels:
+        app: "order-microservice"
+    spec:
+      containers:
+      - name: "order-microservice"
+        image: "classpathio/order-microservice"
+        ports:
+        - name: app
+          containerPort:  8080
+          protocol: TCP
