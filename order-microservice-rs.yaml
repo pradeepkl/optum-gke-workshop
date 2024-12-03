@@ -25,12 +25,12 @@ spec:
           value: dev
         - name: SPRING_DATASOURCE_USERNAME
           valueFrom:
-            configMapKeyRef:
+            secretKeyRef:
               name: db-credentials
               key: username 
         - name: SPRING_DATASOURCE_PASSWORD
           valueFrom:
-            configMapKeyRef:
+            secretKeyRef:
               name: db-credentials
               key: password
         volumeMounts:
