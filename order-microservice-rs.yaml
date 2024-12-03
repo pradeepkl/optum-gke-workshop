@@ -21,6 +21,8 @@ spec:
           containerPort:  8080
           protocol: TCP
         env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: dev
         - name: SPRING_DATASOURCE_USERNAME
           valueFrom:
             configMapKeyRef:
