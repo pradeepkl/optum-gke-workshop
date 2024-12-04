@@ -1,3 +1,89 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: order-microservice-cm
+data:
+  application-dev.yaml: |-
+    app:
+      orderCount: 10
+    server:
+      port: 8222
+    spring:
+      datasource:
+        url: jdbc:h2:mem:orders_db
+      jpa:
+        show-sql: true
+        hibernate:
+          ddl-auto: create
+        properties:
+          hibernate:
+            format_sql: true
+      info:
+        app:
+          name: orders-api
+          description: API for managing orders
+          version: 1.0.0
+      management:
+        endpoint:
+          health:
+            show-details: "ALWAYS"
+          circuitbreakers:
+            enabled: true 
+        endpoints:
+          web:
+            exposure:
+              include: "*"
+        info:
+          env:
+            enabled: true     
+        health:
+          probes:
+            enabled: true  
+  application-qa.yaml: |-
+    app:
+      orderCount: 10
+    server:
+      port: 8333
+    spring:
+      datasource:
+        url: jdbc:h2:mem:orders_db
+      jpa:
+        show-sql: true
+        hibernate:
+          ddl-auto: create
+        properties:
+          hibernate:
+            format_sql: true
+      info:
+        app:
+          name: orders-api
+          description: API for managing orders
+          version: 1.0.0
+      management:
+        endpoint:
+          health:
+            show-details: "ALWAYS"
+          circuitbreakers:
+            enabled: true 
+        endpoints:
+          web:
+            exposure:
+              include: "*"
+        info:
+          env:
+            enabled: true     
+        health:
+          probes:
+            enabled: true 
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: db-credentials
+data:
+  password: d2VsY29tZQ==
+  username: c2E=
+---
 apiVersion: apps/v1
 kind: ReplicaSet
 metadata:
@@ -18,7 +104,7 @@ spec:
         image: "classpathio/order-microservice"
         ports:
         - name: app
-          containerPort:  8080
+          containerPort:  8222
           protocol: TCP
         env:
         - name: SPRING_PROFILES_ACTIVE
@@ -40,5 +126,19 @@ spec:
         - name: app-config
           configMap:
             name: order-microservice-cm
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-microservice-svc
+spec:
+  selector:
+    app: "order-microservice"
+  type: ClusterIP
+  ports:
+  - name: app
+    protocol: TCP
+    port: 80
+    targetPort: 6666           
 
 
