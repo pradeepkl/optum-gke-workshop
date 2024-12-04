@@ -10,7 +10,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   csi:
     driver: pd.csi.storage.gke.io
-    volumeHandle: pd-standard-disk-pradeep
+    volumeHandle: pd-standard-disk-pradeep # replace this with the disk name
     fsType: ext4
 ---
 apiVersion: v1
