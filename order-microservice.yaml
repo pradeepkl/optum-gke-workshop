@@ -84,6 +84,14 @@ data:
   password: d2VsY29tZQ==
   username: c2E=
 ---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: docker-credentials
+type: kubernetes.io/dockerconfigjson
+data:
+  .dockerconfigjson: eyJhdXRocyI6eyJodHRwczovL2luZGV4LmRvY2tlci5pby92MS8iOnsidXNlcm5hbWUiOiJjbGFzc3BhdGhpbyIsInBhc3N3b3JkIjoiV2VsY29tZTQ0IiwiZW1haWwiOiJwcmFkZWVwQGdtYWlsLmNvbSIsImF1dGgiOiJZMnhoYzNOd1lYUm9hVzg2VjJWc1kyOXRaVFEwIn19fQ==
+---
 apiVersion: apps/v1
 kind: ReplicaSet
 metadata:
@@ -126,6 +134,8 @@ spec:
         - name: app-config
           configMap:
             name: order-microservice-cm
+      imagePullSecrets:
+      - name: docker-credentials      
 ---
 apiVersion: v1
 kind: Service
