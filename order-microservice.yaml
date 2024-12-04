@@ -93,9 +93,9 @@ data:
   .dockerconfigjson: eyJhdXRocyI6eyJodHRwczovL2luZGV4LmRvY2tlci5pby92MS8iOnsidXNlcm5hbWUiOiJjbGFzc3BhdGhpbyIsInBhc3N3b3JkIjoiV2VsY29tZTQ0IiwiZW1haWwiOiJwcmFkZWVwQGdtYWlsLmNvbSIsImF1dGgiOiJZMnhoYzNOd1lYUm9hVzg2VjJWc1kyOXRaVFEwIn19fQ==
 ---
 apiVersion: apps/v1
-kind: ReplicaSet
+kind: Deployment
 metadata:
-  name: "order-microservice-rs"
+  name: "order-microservice-dep"
 spec:
   # modify replicas according to your case
   replicas: 2
@@ -109,7 +109,7 @@ spec:
     spec:
       containers:
       - name: "order-microservice"
-        image: "classpathio/order-microservice"
+        image: "classpathio/order-microservice:1.0.0"
         ports:
         - name: app
           containerPort:  8222
