@@ -10,3 +10,14 @@ spec:
   persistentVolumeReclaimPolicy: Delete
   hostPath:
     path: "/mnt/data/mysql"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pradeep-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi 
