@@ -26,4 +26,58 @@ data:
     output.console:
       enabled: true
       pretty: true
----      
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  nginx-with-beats
+  labels:
+    app:  nginx-with-beats
+spec:
+  selector:
+    matchLabels:
+      app: nginx-with-beats
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: nginx-with-beats
+    spec:
+      containers:
+      - name:  nginx
+        image:  nginx:latest
+        ports:
+        - containerPort:  80
+          name:  nginx
+        volumeMounts:
+        - name: nginx-logs
+          mountPath: /var/log/nginx
+          subPath: nginx.config
+      - name: filebeat
+        image: docker.elastic.co/beats/filebeat:7.11.1
+        volumeMounts:
+        - name: nginx-logs
+          mountPath: /var/log/nginx
+        - name: filebeat-config
+          mountPath: /usr/share/filebeat/filebeat.yml
+          subPath: filebeat.yml
+      - name:  metricbeat
+        image:  docker.elastic.co/beats/metricbeat:7.11.1
+        volumeMounts:
+        - name: metricbeat-config
+          mountPath: /usr/share/metricbeat/metricbeat.yml
+          subPath: metricbeat.yml
+      volumes:
+        - name: nginx-logs
+          emptyDir: {}
+        - name: filebeat-config
+          configMap: 
+            name: filebeat-config
+        - name: metricbeat-config
+          configMap: 
+            name: metricbeat-config
+      restartPolicy: Always
+
+
+
+
