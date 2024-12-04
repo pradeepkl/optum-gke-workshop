@@ -97,7 +97,7 @@ kind: Deployment
 metadata:
   name: "order-microservice-dep"
   annotations:
-    kubernetes.io/change-cause: "order-microservice with version 1.0.0"
+    kubernetes.io/change-cause: "order-microservice with version 2.0.0"
 spec:
   # modify replicas according to your case
   replicas: 2
@@ -111,7 +111,7 @@ spec:
     spec:
       containers:
       - name: "order-microservice"
-        image: "classpathio/order-microservice:1.0.0"
+        image: "classpathio/order-microservice:2.0.0"
         ports:
         - name: app
           containerPort:  8222
