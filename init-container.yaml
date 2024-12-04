@@ -1,0 +1,146 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: order-microservice-cm
+data:
+  application-dev.yaml: |-
+    app:
+      orderCount: 10
+    server:
+      port: 8222
+    spring:
+      datasource:
+        url: jdbc:h2:mem:orders_db
+      jpa:
+        show-sql: true
+        hibernate:
+          ddl-auto: create
+        properties:
+          hibernate:
+            format_sql: true
+      info:
+        app:
+          name: orders-api
+          description: API for managing orders
+          version: 1.0.0
+      management:
+        endpoint:
+          health:
+            show-details: "ALWAYS"
+          circuitbreakers:
+            enabled: true 
+        endpoints:
+          web:
+            exposure:
+              include: "*"
+        info:
+          env:
+            enabled: true     
+        health:
+          probes:
+            enabled: true  
+  application-qa.yaml: |-
+    app:
+      orderCount: 10
+    server:
+      port: 8333
+    spring:
+      datasource:
+        url: jdbc:h2:mem:orders_db
+      jpa:
+        show-sql: true
+        hibernate:
+          ddl-auto: create
+        properties:
+          hibernate:
+            format_sql: true
+      info:
+        app:
+          name: orders-api
+          description: API for managing orders
+          version: 1.0.0
+      management:
+        endpoint:
+          health:
+            show-details: "ALWAYS"
+          circuitbreakers:
+            enabled: true 
+        endpoints:
+          web:
+            exposure:
+              include: "*"
+        info:
+          env:
+            enabled: true     
+        health:
+          probes:
+            enabled: true 
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: db-credentials
+data:
+  password: d2VsY29tZQ==
+  username: c2E=
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: docker-credentials
+type: kubernetes.io/dockerconfigjson
+data:
+  .dockerconfigjson: eyJhdXRocyI6eyJodHRwczovL2luZGV4LmRvY2tlci5pby92MS8iOnsidXNlcm5hbWUiOiJjbGFzc3BhdGhpbyIsInBhc3N3b3JkIjoiV2VsY29tZTQ0IiwiZW1haWwiOiJwcmFkZWVwQGdtYWlsLmNvbSIsImF1dGgiOiJZMnhoYzNOd1lYUm9hVzg2VjJWc1kyOXRaVFEwIn19fQ==
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "order-microservice-dep"
+  annotations:
+    kubernetes.io/change-cause: "order-microservice with version 3.0.0"
+spec:
+  # modify replicas according to your case
+  replicas: 2
+  selector:
+    matchLabels:
+      app: "order-microservice"
+  template:
+    metadata:
+      labels:
+        app: "order-microservice"
+    spec:
+      containers:
+      - name: "order-microservice"
+        image: "classpathio/order-microservice:3.0.0"
+        ports:
+        - name: app
+          containerPort:  8222
+          protocol: TCP
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: dev
+        - name: SPRING_DATASOURCE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: username 
+        - name: SPRING_DATASOURCE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: password
+        volumeMounts:
+        - name: app-config
+          mountPath: /app/config
+      initContainers:    
+      - name: side-car-container
+        image: alpine:latest
+        command: ['sh', '-c', 'echo "sidecar container started"; sleep 5']
+      volumes:
+        - name: app-config
+          configMap:
+            name: order-microservice-cm
+ 
+       
+
+
