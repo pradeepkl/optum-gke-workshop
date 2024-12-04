@@ -18,3 +18,23 @@ spec:
   resources:
     requests:
       storage: 2Gi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: debug-pod-2
+spec:
+  containers:
+  - name: debug-pod
+    image: busybox
+    command: ["sh", "-c", "sleep 3600"]
+    volumeMounts:
+    - name: debug-volume
+      mountPath: /mnt
+  volumes:
+    - name: debug-volume
+      persistentVolumeClaim:
+        claimName: pradeep-pvc-1
+  restartPolicy: Always
+
+
