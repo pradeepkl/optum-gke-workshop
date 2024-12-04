@@ -96,6 +96,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: "order-microservice-dep"
+  annotations:
+    kubernetes.io/change-cause: "order-microservice with version 1.0.0"
 spec:
   # modify replicas according to your case
   replicas: 2
