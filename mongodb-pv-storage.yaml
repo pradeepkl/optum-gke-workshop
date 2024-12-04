@@ -9,8 +9,8 @@ spec:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   csi:
-    driver: pd.csi.storage.gke.io
-    volumeHandle: pd-standard-disk-pradeep # replace this with the disk name
+    driver: pd.csi.storage.gke.iok
+    volumeHandle: pd-standard-disk-demo # replace this with the disk name
     fsType: ext4
 ---
 apiVersion: v1
