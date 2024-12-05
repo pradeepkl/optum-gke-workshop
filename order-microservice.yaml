@@ -132,6 +132,24 @@ spec:
         volumeMounts:
         - name: app-config
           mountPath: /app/config
+        livenessProbe:
+          httpGet:
+            path: /actuator/health/liveness
+            port: 8222
+          initialDelaySeconds: 15
+          periodSeconds: 5
+          timeoutSeconds: 5
+          failureThreshold: 3
+          successThreshold: 1
+        readinessProbe:
+          httpGet:
+            path: /actuator/health/readiness
+            port: 8222
+          initialDelaySeconds: 15
+          periodSeconds: 5
+          timeoutSeconds: 5
+          failureThreshold: 3
+          successThreshold: 1
       volumes:
         - name: app-config
           configMap:

@@ -2,13 +2,13 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: pod-reader-sa
-  namespace: pradeep-ns
+  namespace: aditi-ns
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role 
 metadata:
   name: pod-reader
-  namespace: pradeep-ns
+  namespace: aditi-ns
 rules:
 - apiGroups: [""]
   resources: ["pods"] # which resource (noun)
@@ -24,7 +24,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: read-pods
-  namespace: pradeep-ns
+  namespace: aditi-ns
 subjects: # who    
 - kind: ServiceAccount
   name: pod-reader-sa
@@ -37,7 +37,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: test-pod
-  namespace: pradeep-ns
+  namespace: aditi-ns
 spec:
   serviceAccountName: pod-reader-sa
   containers:
