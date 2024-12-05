@@ -1,0 +1,22 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole 
+metadata:
+  name: deny-namespaces
+rules:
+- apiGroups: [""]
+  resources: ["namespaces"] # which resource (noun)
+  verbs: [""] # what actions can be performed 
+
+--- 
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: deny-namespaces-binding
+subjects: # who    
+- kind: User
+  name: hvrbusa@gmail.com  # add your email address
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: deny-namespaces 
+  apiGroup: rbac.authorization.k8s.io   

@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: pod-reader-sa
+  namespace: pradeep-ns
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role 
+metadata:
+  name: pod-reader
+  namespace: pradeep-ns
+rules:
+- apiGroups: [""]
+  resources: ["pods"] # which resource (noun)
+  verbs: ["get", "list", "watch"] # what actions can be performed 
+- apiGroups: ["apps"]
+  resources: ["replicasets"] # which resource (noun)
+  verbs: ["get", "list", "watch"] # what actions can be performed 
+
+  # missing the who  
+
+--- 
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: read-pods
+  namespace: pradeep-ns
+subjects: # who    
+- kind: ServiceAccount
+  name: pod-reader-sa
+roleRef:
+  kind: Role
+  name: pod-reader 
+  apiGroup: rbac.authorization.k8s.io 
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-pod
+  namespace: pradeep-ns
+spec:
+  serviceAccountName: pod-reader-sa
+  containers:
+  - name: alpine
+    image: "alpine:latest"
+    command: ["sh", "-c", "sleep 3600"]
+  restartPolicy: Always 
