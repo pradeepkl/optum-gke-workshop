@@ -87,19 +87,24 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: "order-microservice-dep"
+  name: "order-microservice-dep-v1"
+  labels:
+    app: order-microservice
+    version: v1
   annotations:
     kubernetes.io/change-cause: "order-microservice with version 3.0.0"
 spec:
   # modify replicas according to your case
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: "order-microservice"
+      version: v1
   template:
     metadata:
       labels:
         app: "order-microservice"
+        version: v1
     spec:
       containers:
       - name: "order-microservice"
@@ -129,6 +134,70 @@ spec:
           configMap:
             name: order-microservice-cm
 ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "order-microservice-dep-v2"
+  labels:
+    app: order-microservice
+    version: v2
+  annotations:
+    kubernetes.io/change-cause: "order-microservice with version 3.0.0"
+spec:
+  # modify replicas according to your case
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "order-microservice-v2"
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: "order-microservice"
+        version: v2
+    spec:
+      containers:
+      - name: "order-microservice"
+        image: "classpathio/order-microservice:3.0.0"
+        ports:
+        - name: app
+          containerPort:  8222
+          protocol: TCP
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: dev
+        - name: SPRING_DATASOURCE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: username 
+        - name: SPRING_DATASOURCE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: password
+        volumeMounts:
+        - name: app-config
+          mountPath: /app/config
+      volumes:
+        - name: app-config
+          configMap:
+            name: order-microservice-cm
+--- 
+apiVersion: networking.istio.io/v1
+kind: DestinationRule
+metadata:
+  name: order-microservice-destination-rule
+spec:
+  host: order-microservice-svc.pradeep-ns.svc.cluster.local
+  subsets:
+  - name: v1
+    labels:
+      version: v1   
+  - name: v2
+    labels:
+      version: v2
+---   
 apiVersion: v1
 kind: Service
 metadata:
@@ -156,7 +225,7 @@ spec:
       name: http 
       protocol: HTTP 
     hosts:
-    - "aditi.classpath.io"
+    - "pradeep.classpath.io"
 
 ---          
 # VirtualService
@@ -166,7 +235,7 @@ metadata:
   name: order-microservice
 spec:
   hosts:
-  - "aditi.classpath.io"
+  - "pradeep.classpath.io"
   gateways:
   - order-microservice-gateway
   http:
@@ -175,9 +244,17 @@ spec:
         prefix: /api/v1/orders
     route:
     - destination:
-        host: order-microservice-svc.aditi-ns.svc.cluster.local
+        host: order-microservice-svc.pradeep-ns.svc.cluster.local
+        subset: v1
         port:
           number: 80
+      weight: 80    
+    - destination:
+        host: order-microservice-svc.pradeep-ns.svc.cluster.local
+        subset: v2
+        port:
+          number: 80
+      weight: 20      
          
 
 
