@@ -148,7 +148,7 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: "order-microservice-v2"
+      app: "order-microservice"
       version: v2
   template:
     metadata:
@@ -183,7 +183,7 @@ spec:
         - name: app-config
           configMap:
             name: order-microservice-cm
---- 
+---
 apiVersion: networking.istio.io/v1
 kind: DestinationRule
 metadata:
