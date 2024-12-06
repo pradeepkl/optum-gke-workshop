@@ -175,7 +175,7 @@ spec:
         prefix: /api/v1/orders
     route:
     - destination:
-        host: order-microservice
+        host: order-microservice-svc.pradeep-ns.svc.cluster.local
         port:
           number: 80
          
