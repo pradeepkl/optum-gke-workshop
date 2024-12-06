@@ -9,8 +9,8 @@ data:
       paths:
         - /var/log/nginx/*.log
     output.console:
-      enabled: true
-      pretty: true
+      enabled: false
+      pretty: false
 ---
 apiVersion: v1
 kind: ConfigMap
