@@ -95,7 +95,7 @@ metadata:
     kubernetes.io/change-cause: "order-microservice with version 3.0.0"
 spec:
   # modify replicas according to your case
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: "order-microservice"
