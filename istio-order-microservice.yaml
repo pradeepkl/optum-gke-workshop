@@ -124,24 +124,6 @@ spec:
         volumeMounts:
         - name: app-config
           mountPath: /app/config
-        livenessProbe:
-          httpGet:
-            path: /actuator/health/liveness
-            port: 8222
-          initialDelaySeconds: 15
-          periodSeconds: 5
-          timeoutSeconds: 5
-          failureThreshold: 3
-          successThreshold: 1
-        readinessProbe:
-          httpGet:
-            path: /actuator/health/readiness
-            port: 8222
-          initialDelaySeconds: 15
-          periodSeconds: 5
-          timeoutSeconds: 5
-          failureThreshold: 3
-          successThreshold: 1
       volumes:
         - name: app-config
           configMap:
@@ -161,8 +143,41 @@ spec:
     port: 80
     targetPort: 8222
 --- 
-# https://kubernetes.io/docs/concepts/services-networking/ingress/#the-ingress-resource
+apiVersion: networking.istio.io/v1
+kind: Gateway
+metadata:
+  name: order-microservice-gateway
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http 
+      protocol: HTTP 
+    hosts:
+    - "pradeep.classpath.io"
 
+---          
+# VirtualService
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: order-microservice
+spec:
+  hosts:
+  - "pradeep.classpath.io"
+  gateways:
+  - order-microservice-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /api/v1/orders
+    route:
+    - destination:
+        host: order-microservice
+        port:
+          number: 80
          
 
 
